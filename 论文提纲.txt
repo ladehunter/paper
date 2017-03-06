@@ -1,0 +1,47 @@
+题目：基于ASTPattern的API升级系统的研究设计与实现
+
+1.引言
+	背景——程序代码量几何增长，泛用API被使用量大，逐个修改劳神费力，抽象可行性高，具备自动化处理的条件
+	意义——辅助升级，减少人力耗费并提升稳定性和覆盖率
+	现状——国内外基于AST的代码分析，自动化API升级工具等
+	内容——提出ASTPattern概念，通过llvm，clang，gumtree获取AST来得到代表代码修改的ASTPattern，对其进行分析抽闲，通过coccinelle实现自动化API升级
+	结构——整体结构介绍，关键概念，工具，模块详解。ASTPattern merge模块结构，算法详解及实际效果。Coccinelle generation部分结构，算法详解及实际效果。全文总结与展望。
+2.整体结构，ASTPattern，ASTPattern获取，llvm，clang，gumtree，coccinelle，ASTPattern merge，coccigen。
+3.ASTPattern merge
+	整体结构及详解
+		输入，全部ASTPattern
+		对全部的ASTPattern进行预处理
+		逐个ASTPattern对比，判断是否合并，循环执行直到全部ASTPattern都进行过对比。
+		输出，分组后的ASTPattern
+	算法设计及详解
+		前期处理（去无用节点，抽象化非必要节点，提取根节点组）
+		对比（总出度，红绿总出度，出度，关键特征），合并（取抽象程度更高的点）
+		输出。
+	实际演示及效果评估
+		对commit提取ASTPattern并图像化展示。
+		评估指标：ASTPattern对修改内容的覆盖率和正确率
+	
+4.coccigen
+	整体结构及详解
+		输入：ASTPattern
+		对出现频率高于阈值的ASTPattern进行分析，生成cocci脚本
+		输出cocci脚本
+	算法设计及详解
+		cocci脚本语法简介
+		ASTPattern类型判别及详解
+		脚本内容生成策略及详解
+			红，绿，蓝，黑节点
+			参数内容的抽象获取
+			参数内容的针对性获取
+			语句内容的获取
+			特定内容的针对获取
+			特定内容语句的针对生成
+			
+	实际演示及效果评估                              
+		对某commit的ASTPattern全面分析，生成cocci脚本，通过coccinelle的spatch模块进行部署，与实际commit进行对比判断有效性。
+		评估指标：cocci脚本对commit内容的覆盖率和正确率
+	
+5.总结展望
+	内容总结
+	不足举例
+	未来方向
